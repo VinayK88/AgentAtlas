@@ -72,7 +72,7 @@ class AgentAtlasTests(unittest.TestCase):
 
     def test_checked_in_baseline_matches_executable_report(self):
         checked_in = json.loads(Path("reports/baseline.json").read_text())
-        current = build_report()
+        current = json.loads(json.dumps(build_report()))
         self.assertEqual(checked_in["summary"], current["summary"])
         self.assertEqual(checked_in["top_agents"], current["top_agents"])
         self.assertEqual(checked_in["delegation"], current["delegation"])
