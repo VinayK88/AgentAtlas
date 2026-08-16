@@ -7,7 +7,7 @@ from agentatlas.delegation import evaluate_delegation
 from agentatlas.drift import calculate_drift
 from agentatlas.fixtures import generate_agents
 from agentatlas.models import AgentIdentity
-from agentatlas.posture import posture_summary, rank_agents
+from agentatlas.posture import posture_summary, rank_agents, score_agent
 from agentatlas.service import build_report
 
 
@@ -30,6 +30,47 @@ class AgentAtlasTests(unittest.TestCase):
         rows = rank_agents(generate_agents())
         self.assertTrue(all(0 <= r.risk <= 0.99 for r in rows))
         self.assertTrue(all(rows[i].risk >= rows[i + 1].risk for i in range(len(rows) - 1)))
+
+    def _base_agent(self, **overrides):
+        values = dict(
+            agent_id="agent-test",
+            owner="security",
+            sponsor="owner@example.test",
+            environment="development",
+            identity_type="workload_identity",
+            autonomy_level=1,
+            managed=True,
+            last_active_days=1,
+            permissions=("docs.read",),
+            tools=("docs.search",),
+            mcp_servers=("mcp-docs",),
+            external_destinations=(),
+        )
+        values.update(overrides)
+        return AgentIdentity(**values)
+
+    def test_posture_score_is_monotonic_for_governance_risk(self):
+        base = score_agent(self._base_agent()).risk
+        shadow = score_agent(self._base_agent(managed=False)).risk
+        orphaned = score_agent(self._base_agent(owner=None, sponsor=None)).risk
+        privileged = score_agent(self._base_agent(permissions=("docs.read", "payments.write"))).risk
+        egress = score_agent(self._base_agent(external_destinations=("external-webhook",))).risk
+        self.assertGreater(shadow, base)
+        self.assertGreater(orphaned, base)
+        self.assertGreater(privileged, base)
+        self.assertGreater(egress, base)
+
+    def test_sensitive_export_path_increases_score(self):
+        no_path = score_agent(self._base_agent(permissions=("data.export",))).risk
+        with_path = score_agent(self._base_agent(
+            permissions=("data.export",), external_destinations=("external-webhook",)
+        )).risk
+        self.assertGreater(with_path, no_path)
+
+    def test_low_risk_permission_does_not_outweigh_privileged_scope(self):
+        low = score_agent(self._base_agent(permissions=("docs.read", "github.search", "web.search"))).risk
+        privileged = score_agent(self._base_agent(permissions=("docs.read", "payments.write"))).risk
+        self.assertGreater(privileged, low)
 
     def test_delegation_cannot_expand_origin_authority(self):
         decision = evaluate_delegation(("human", "agent-a", "agent-b"), ("docs.read",), "payments.write")
