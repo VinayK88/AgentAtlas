@@ -1,0 +1,37 @@
+{
+  "summary": {
+    "agents": 120,
+    "managed": 111,
+    "shadow": 9,
+    "orphaned": 6,
+    "dormant": 42,
+    "high_or_critical": 8,
+    "critical": 2,
+    "mean_risk": 0.2457
+  },
+  "top_agents": [
+    {"agent_id": "agent-078", "risk": 0.7354, "severity": "critical", "reasons": ["shadow_agent", "dormant_identity", "high_autonomy_production"]},
+    {"agent_id": "agent-096", "risk": 0.721, "severity": "critical", "reasons": ["dormant_identity", "external_egress_capability", "broad_permission_set", "privileged_scope", "sensitive_data_to_external_path"]},
+    {"agent_id": "agent-120", "risk": 0.6206, "severity": "high", "reasons": ["external_egress_capability", "broad_permission_set", "privileged_scope", "secret_access", "sensitive_data_to_external_path"]},
+    {"agent_id": "agent-039", "risk": 0.6199, "severity": "high", "reasons": ["shadow_agent", "dormant_identity", "high_autonomy_production"]},
+    {"agent_id": "agent-104", "risk": 0.6022, "severity": "high", "reasons": ["shadow_agent", "external_egress_capability"]},
+    {"agent_id": "agent-072", "risk": 0.581, "severity": "high", "reasons": ["external_egress_capability", "broad_permission_set", "privileged_scope", "sensitive_data_to_external_path"]},
+    {"agent_id": "agent-048", "risk": 0.581, "severity": "high", "reasons": ["external_egress_capability", "broad_permission_set", "privileged_scope", "sensitive_data_to_external_path"]},
+    {"agent_id": "agent-024", "risk": 0.581, "severity": "high", "reasons": ["external_egress_capability", "broad_permission_set", "privileged_scope", "sensitive_data_to_external_path"]},
+    {"agent_id": "agent-102", "risk": 0.5454, "severity": "medium", "reasons": ["orphaned_identity", "high_autonomy_production"]},
+    {"agent_id": "agent-090", "risk": 0.5206, "severity": "medium", "reasons": ["high_autonomy_production", "broad_permission_set", "privileged_scope", "secret_access"]}
+  ],
+  "delegation": [
+    {"chain": ["human:analyst", "agent-012", "agent-024"], "origin_scopes": ["docs.read", "customer.read"], "requested_scope": "customer.read", "decision": "ALLOW", "reason": "within_originating_authority"},
+    {"chain": ["human:engineer", "agent-010", "agent-020"], "origin_scopes": ["github.search"], "requested_scope": "repository.write", "decision": "DENY", "reason": "delegated_scope_exceeds_origin_authority"},
+    {"chain": ["human:finance", "agent-030", "agent-060"], "origin_scopes": ["finance.read"], "requested_scope": "payments.write", "decision": "DENY", "reason": "delegated_scope_exceeds_origin_authority"},
+    {"chain": ["human:security", "agent-015", "agent-045"], "origin_scopes": ["secrets.read"], "requested_scope": "secrets.read", "decision": "ALLOW", "reason": "within_originating_authority"}
+  ],
+  "permission_drift": [
+    {"agent_id": "agent-020", "added": ["iam.modify", "repository.write"], "removed": [], "risk_delta": 1.02, "severity": "critical"},
+    {"agent_id": "agent-030", "added": ["payments.write"], "removed": [], "risk_delta": 0.82, "severity": "critical"},
+    {"agent_id": "agent-048", "added": ["data.export", "slack.send_external"], "removed": [], "risk_delta": 0.72, "severity": "high"},
+    {"agent_id": "agent-075", "added": [], "removed": ["secrets.read"], "risk_delta": -0.58, "severity": "low"}
+  ],
+  "scope": "Synthetic deterministic inventory; values demonstrate governance logic and are not production risk estimates."
+}
