@@ -4,9 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentatlas"
-version = "0.1.0"
-description = "Synthetic shadow AI agent discovery, identity governance, effective access, delegation, and permission-drift platform"
+version = "0.2.0"
+description = "AI agent discovery, identity governance, effective access, delegation, permission drift, and hybrid ML anomaly analysis"
 requires-python = ">=3.11"
+dependencies = ["scikit-learn==1.7.2"]
 
 [tool.setuptools.packages.find]
 include = ["agentatlas*"]
