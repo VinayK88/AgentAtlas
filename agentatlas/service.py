@@ -1,6 +1,7 @@
 from agentatlas.access import effective_access_paths
 from agentatlas.delegation import evaluate_delegation
 from agentatlas.drift import calculate_drift
+from agentatlas.evaluation import evaluation_summary
 from agentatlas.fixtures import delegation_cases, generate_agents, permission_snapshots
 from agentatlas.ml import analyze_agents, ml_summary
 from agentatlas.posture import posture_summary, rank_agents
@@ -23,6 +24,7 @@ def build_report() -> dict[str, object]:
         "top_agents": [{"agent_id": f.agent_id, "risk": f.risk, "severity": f.severity, "reasons": list(f.reasons)} for f in ranked[:10]],
         "ml": ml_summary(agents),
         "top_ml_anomalies": [row.to_dict() for row in ml_ranked[:10]],
+        "model_monitoring_and_robustness": evaluation_summary(agents),
         "delegation": [d.__dict__ for d in delegation],
         "permission_drift": [d.__dict__ for d in drift],
         "critical_effective_access_paths": [p.__dict__ for p in critical_paths[:10]],
